@@ -3,7 +3,7 @@ from app.db import db
 import pytest
 
 
-@pytest.mark.skip(reason="No way to test this feature yet")
+# @pytest.mark.skip(reason="No way to test this feature yet")
 def test_get_tasks_no_saved_tasks(client):
     # Act
     response = client.get("/tasks")
@@ -14,7 +14,7 @@ def test_get_tasks_no_saved_tasks(client):
     assert response_body == []
 
 
-@pytest.mark.skip(reason="No way to test this feature yet")
+# @pytest.mark.skip(reason="No way to test this feature yet")
 def test_get_tasks_one_saved_tasks(client, one_task):
     # Act
     response = client.get("/tasks")
