@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, abort, make_response
 from app.models.task import Task
 from app.db import db
 
@@ -77,3 +77,36 @@ def get_all_tasks():
         )
 
     return tasks_response, 200
+
+
+@tasks_bp.get("/<task_id>")
+def get_one_task(task_id):
+    task = validate_task(task_id)
+
+    response = {
+        "task": {
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+            # "completed_at": new_task.completed_at
+            "is_complete": False if task.completed_at is None else True
+        }
+    }
+    
+    return response, 200
+
+def validate_task(task_id):
+    try:
+        task_id = int(task_id)
+    except ValueError:
+        invalid_response = {"message": f"Task id ({task_id}) is invalid."}
+        abort(make_response(invalid_response, 400))
+        
+    query = db.select(Task).where(Task.id == task_id)
+    task = db.session.scalar(query)
+
+    if not task:
+        not_found_response = {"message": f"Task id ({task_id}) not found."}
+        abort(make_response(not_found_response, 404))
+
+    return task
