@@ -1,13 +1,11 @@
 from flask import Blueprint, request, abort, make_response
 from ..db import db
-
-# Wave 5
 from app.models.goal import Goal
 
-# tasks_bp = Blueprint("tasks_bp", __name__, url_prefix = "/tasks")
 goals_bp = Blueprint("goals_bp", __name__, url_prefix = "/goals")
 
 
+# Wave 5
 @goals_bp.post("")
 def create_goal():
     request_body = request.get_json()
@@ -21,9 +19,6 @@ def create_goal():
     db.session.add(new_goal)
     db.session.commit()
 
-    # class_name = new_goal.__class__.__name__
-    # response = {class_name: new_goal.to_dict()}
-
     ####################### Optional 1
     # response = {"goal": new_goal.to_dict()}
 
@@ -33,3 +28,16 @@ def create_goal():
     ####################### END Optiona 1 Refactoring
 
     return response, 201
+
+# GET request to /goals
+
+@goals_bp.get("")
+def get_all_goals():
+
+    query = db.select(Goal)
+    goals = db.session.scalars(query)
+
+    response = [goal.to_dict() for goal in goals]
+
+    return response, 200
+
