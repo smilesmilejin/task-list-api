@@ -1,6 +1,7 @@
 from flask import Blueprint, request, abort, make_response
 from ..db import db
 from app.models.goal import Goal
+from app.routes.route_utilities import validate_model
 
 goals_bp = Blueprint("goals_bp", __name__, url_prefix = "/goals")
 
@@ -30,7 +31,6 @@ def create_goal():
     return response, 201
 
 # GET request to /goals
-
 @goals_bp.get("")
 def get_all_goals():
 
@@ -41,3 +41,12 @@ def get_all_goals():
 
     return response, 200
 
+
+@goals_bp.get("/<goal_id>")
+def get_one_goal(goal_id):
+    goal = validate_model(Goal, goal_id)
+
+    class_name = (goal.__class__.__name__).lower()
+    response = {class_name: goal.to_dict()}
+
+    return response, 200
