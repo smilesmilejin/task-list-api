@@ -3,6 +3,8 @@ from app.models.task import Task
 from app.db import db
 from app.routes.route_utilities import validate_model
 from datetime import datetime
+import requests # Use Python package requests to make HTTP calls
+import os
 
 tasks_bp = Blueprint("tasks_bp", __name__, url_prefix = "/tasks")
 
@@ -212,6 +214,35 @@ def mark_task_complete(task_id):
     task.completed_at = datetime.now()
     
     db.session.commit()
+
+    # Wave 4
+    # Get environmental variables from .env
+    slack_url = os.environ.get('SLACK_URI')
+    slack_token = os.environ.get('SLACK_TOEKN')
+
+    headers = {
+        # This will not work!
+        # "Authorization": slack_token,
+        "Authorization": f"Bearer {slack_token}",
+        "Content-Type": "application/json"
+    }   
+
+    data = {
+
+        "channel": "C08NTC26TM1",
+        "text": f"Someone just completed the task {task.title}"
+    }
+
+    # Make the POST request to Slack API
+    response = requests.post(slack_url, headers=headers, json=data)
+
+    # Check Slack Reponse Status code and json
+    print('################## Slack Response')
+    print(response)
+    print(response.status_code)
+    print(response.json()) 
+    # End Wave 4 
+
     return Response(status=204, mimetype="application/json")
 
 @tasks_bp.patch("/<task_id>/mark_incomplete")
