@@ -4,6 +4,7 @@ from app.db import db
 
 tasks_bp = Blueprint("tasks_bp", __name__, url_prefix = "/tasks")
 
+# Wave 1
 @tasks_bp.post("")
 def create_task():
 
@@ -62,6 +63,19 @@ def create_task():
 @tasks_bp.get("")
 def get_all_tasks():
     query = db.select(Task)
+
+    # Wave 2
+    # /tasks?sort=asc
+    # /tasks?sort=desc
+    sort_param = request.args.get("sort")
+
+    if sort_param == "asc":
+        query = query.order_by(Task.title.asc())
+
+    elif sort_param == "desc":
+        query = query.order_by(Task.title.desc())
+    # End Wave 2 
+    
     tasks = db.session.scalars(query)
 
     tasks_response = []
@@ -130,3 +144,8 @@ def delete_task(task_id):
     db.session.commit()
     
     return Response(status=204, mimetype="application/json")
+
+# Wave 2
+# /tasks?sort=asc
+# Sorting Tasks: By Title, Ascending
+# tasks sorted by title. The titles should be in ascending order alphebetically
