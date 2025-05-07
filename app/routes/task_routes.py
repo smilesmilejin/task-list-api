@@ -83,8 +83,14 @@ def create_task():
 
     ######################################## Option 3 Refactoring
     # use to_dict for creating the instance dictionary
-    response = {"task": new_task.to_dict()}
+    # response = {"task": new_task.to_dict()}
     ######################################## END Option 3 Refactoring
+
+
+    ####################### Optiona 3 Refactoring Version 2
+    class_name = (new_task.__class__.__name__).lower()
+    response = {class_name: new_task.to_dict()}
+    ####################### END Optiona 1 Refactoring
 
     return response, 201
 
@@ -153,9 +159,14 @@ def get_one_task(task_id):
 
     ######################################## Option 1 Refactoring
     # use to_dict for creating the instance dictionary
-    response = {"task": task.to_dict()}
+    # response = {"task": task.to_dict()}
     ######################################## END Option 1 Refactoring
     
+    ######################################## Optiona 2 Refactoring Version 2
+    class_name = (task.__class__.__name__).lower()
+    response = {class_name: task.to_dict()}
+    ######################################## END Optiona 2 Refactoring
+
     return response, 200
 
 ######################################## Option 1 
