@@ -1,4 +1,4 @@
-from flask import Blueprint, request, abort, make_response
+from flask import Blueprint, request, abort, make_response, Response
 from ..db import db
 from app.models.goal import Goal
 from app.routes.route_utilities import validate_model
@@ -50,3 +50,13 @@ def get_one_goal(goal_id):
     response = {class_name: goal.to_dict()}
 
     return response, 200
+
+# PUT request to /goals/1
+@goals_bp.put("/<goal_id>")
+def update_goal(goal_id):
+    goal = validate_model(Goal, goal_id)
+    request_body = request.get_json()
+    goal.title = request_body["title"]
+
+    db.session.commit()
+    return Response(status=204, mimetype="application/json")
