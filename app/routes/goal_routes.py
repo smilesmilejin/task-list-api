@@ -113,3 +113,20 @@ def add_existing_tasksIDs_list_to_existing_goal(goal_id):
     
     # 200 is not needed here, it is the default
     return response_body, 200
+
+# GET request to /goals/333/tasks
+@goals_bp.get("/<goal_id>/tasks")
+def get_goal_with_tasks_list(goal_id):
+    goal = validate_model(Goal, goal_id)
+
+    task_list = []
+    for task in goal.tasks:
+        task = task.to_dict()
+        task["goal_id"] = int(goal_id)
+        task_list.append(task)
+    
+    response = goal.to_dict()
+    response["tasks"] = task_list
+
+    return response, 200
+
