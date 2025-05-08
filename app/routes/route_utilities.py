@@ -29,7 +29,8 @@ def create_model(cls, model_data):
     db.session.add(new_model)
     db.session.commit()
 
-    class_name = (new_model.__class__.__name__).lower()
+    # class_name = (new_model.__class__.__name__).lower()
+    class_name = str(new_model).lower()
     response = {class_name: new_model.to_dict()}
 
     return response, 201
