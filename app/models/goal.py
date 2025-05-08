@@ -12,6 +12,10 @@ class Goal(db.Model):
     # One task has one goal
     tasks: Mapped[list["Task"]] = relationship(back_populates="goal")
 
+    def __str__(self):
+        return self.__class__.__name__
+
+
     def to_dict(self):
         goal_as_dict = {}
         goal_as_dict["id"] = self.id

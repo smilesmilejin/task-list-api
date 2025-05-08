@@ -54,7 +54,12 @@ def get_all_goals():
 def get_one_goal(goal_id):
     goal = validate_model(Goal, goal_id)
 
-    class_name = (goal.__class__.__name__).lower()
+    ####################### Optiona 1
+    # class_name = (goal.__class__.__name__).lower()
+    ####################### Refactoring Optiona 1: use str method in the class
+    class_name = str(goal).lower()
+
+    ####################### END Refactoring Optiona 1: use str method in the class
     response = {class_name: goal.to_dict()}
 
     return response, 200

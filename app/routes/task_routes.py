@@ -177,7 +177,14 @@ def get_one_task(task_id):
     ######################################## END Option 1 Refactoring
     
     ######################################## Optiona 2 Refactoring Version 2
-    class_name = (task.__class__.__name__).lower()
+
+    ####################### Optiona 1
+    # class_name = (goal.__class__.__name__).lower()
+    ####################### Refactoring Optiona 1: use str method in the class
+    class_name = str(task).lower()
+
+    ####################### END Refactoring Optiona 1: use str method in the class
+
     response = {class_name: task.to_dict()}
     ######################################## END Optiona 2 Refactoring
 

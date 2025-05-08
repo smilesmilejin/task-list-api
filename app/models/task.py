@@ -28,6 +28,9 @@ class Task(db.Model):
     goal: Mapped[Optional["Goal"]] = relationship(back_populates="tasks")
 
 
+    def __str__(self):
+        return self.__class__.__name__
+
     # No column completed_at
     def to_dict(self):
         task_as_dict = {}
