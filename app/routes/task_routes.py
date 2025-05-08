@@ -2,7 +2,7 @@ from flask import Blueprint, request, abort, make_response, Response
 from app.models.task import Task
 from app.models.goal import Goal
 from app.db import db
-from app.routes.route_utilities import validate_model, create_model
+from app.routes.route_utilities import validate_model, create_model, get_models_sorted_by_title
 from datetime import datetime
 import requests # Use Python package requests to make HTTP calls
 import os
@@ -105,43 +105,49 @@ def create_task():
 
 @tasks_bp.get("")
 def get_all_tasks():
-    query = db.select(Task)
 
-    # Wave 2
-    # /tasks?sort=asc
-    # /tasks?sort=desc
-    sort_param = request.args.get("sort")
+     #  # ################################################################ END OPTION Post : use create_model
+    # query = db.select(Task)
 
-    if sort_param == "asc":
-        query = query.order_by(Task.title.asc())
+    # # Wave 2
+    # # /tasks?sort=asc
+    # # /tasks?sort=desc
+    # sort_param = request.args.get("sort")
 
-    elif sort_param == "desc":
-        query = query.order_by(Task.title.desc())
-    # End Wave 2 
+    # if sort_param == "asc":
+    #     query = query.order_by(Task.title.asc())
+
+    # elif sort_param == "desc":
+    #     query = query.order_by(Task.title.desc())
+    # # End Wave 2 
     
-    tasks = db.session.scalars(query)
+    # tasks = db.session.scalars(query)
 
-    tasks_response = []
-    for task in tasks:
-        ######################################## Option 1
-        # tasks_response.append(
-        #     {
-        #     "id": task.id,
-        #     "title": task.title,
-        #     "description": task.description,
-        #     # "completed_at": new_task.completed_at
-        #     # "is_complete": False if task.completed_at is None else True
-        #     "is_complete": task.is_complete
-        #     }
-        # )
+    # tasks_response = []
+    # for task in tasks:
+    #     ######################################## Option 1
+    #     # tasks_response.append(
+    #     #     {
+    #     #     "id": task.id,
+    #     #     "title": task.title,
+    #     #     "description": task.description,
+    #     #     # "completed_at": new_task.completed_at
+    #     #     # "is_complete": False if task.completed_at is None else True
+    #     #     "is_complete": task.is_complete
+    #     #     }
+    #     # )
 
-        ######################################## Option 1 Refactoring
-        # use to_dict for creating the instance dictionary
-        tasks_response.append(task.to_dict())
-        ######################################## END Option 1 Refactoring
+    #     ######################################## Option 1 Refactoring
+    #     # use to_dict for creating the instance dictionary
+    #     tasks_response.append(task.to_dict())
+    #     ######################################## END Option 1 Refactoring
 
-    return tasks_response, 200
+    # return tasks_response, 200
+     #  # ################################################################ END OPTION Post : use create_model
 
+    ################################################################ Refactoring OPTION get : get_models_sorted_by_title(
+    return get_models_sorted_by_title(Task, request.args)
+    ################################################################ END Refactoring OPTION get : get_models_sorted_by_title(
 
 @tasks_bp.get("/<task_id>")
 def get_one_task(task_id):

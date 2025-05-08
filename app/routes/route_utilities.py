@@ -33,3 +33,21 @@ def create_model(cls, model_data):
     response = {class_name: new_model.to_dict()}
 
     return response, 201
+
+def get_models_sorted_by_title(cls, sort_order):
+    query = db.select(cls)
+
+    if sort_order:
+        for sort, order in sort_order.items():
+            if order == "asc":
+                # print('############### asc')
+                query = query.order_by(cls.title.asc())
+            elif order == "desc":
+                # print('############### desc')
+                query = query.order_by(cls.title.desc())
+    
+    models = db.session.scalars(query)
+    models_reponse = [model.to_dict() for model in models]
+
+    return models_reponse
+
