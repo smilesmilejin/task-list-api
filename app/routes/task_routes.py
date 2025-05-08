@@ -2,7 +2,7 @@ from flask import Blueprint, request, abort, make_response, Response
 from app.models.task import Task
 from app.models.goal import Goal
 from app.db import db
-from app.routes.route_utilities import validate_model
+from app.routes.route_utilities import validate_model, create_model
 from datetime import datetime
 import requests # Use Python package requests to make HTTP calls
 import os
@@ -15,86 +15,93 @@ def create_task():
 
     request_body = request.get_json()
 
-    # print('####### request_body:', request_body)
-    # request_body {'title': 'A Brand New Task', 'description': 'Test Description'}
+    #  # ################################################################ OPTION Post : use create_model
+
+    # # print('####### request_body:', request_body)
+    # # request_body {'title': 'A Brand New Task', 'description': 'Test Description'}
     
-    ######################################## Option 1
-    # if (not "title" in request_body) or (not "description" in request_body):
-    #     response = {
-    #         "details": "Invalid data"
-    #     }
+    # ######################################## Option 1
+    # # if (not "title" in request_body) or (not "description" in request_body):
+    # #     response = {
+    # #         "details": "Invalid data"
+    # #     }
         
-    #     return response, 400
+    # #     return response, 400
     
-    ################################## Option 1 Refactoring
-    try:
-        new_task = Task.from_dict(request_body)
-    except KeyError as e:
-        response = {"details": "Invalid data"}
-        abort(make_response(response, 400))
-        # return response, 400 # THis also works
-    ################################## END Option 1 Refactoring
+    # ################################## Option 1 Refactoring
+    # try:
+    #     new_task = Task.from_dict(request_body)
+    # except KeyError as e:
+    #     response = {"details": "Invalid data"}
+    #     abort(make_response(response, 400))
+    #     # return response, 400 # THis also works
+    # ################################## END Option 1 Refactoring
 
 
-    ######################################## Option 2
-    # Refactoring the class method in task.py
+    # ######################################## Option 2
+    # # Refactoring the class method in task.py
 
-    # title = request_body["title"]
-    # description = request_body["description"]
+    # # title = request_body["title"]
+    # # description = request_body["description"]
     
-    # if not "completed_at" in request_body:
-    #     new_task = Task(
-    #         title=title, 
-    #         description=description
-    #     )
-    #     # None
-    #     # print('##### if completed at key NOT in request_body new_task.completed_at : ', new_task.completed_at)
+    # # if not "completed_at" in request_body:
+    # #     new_task = Task(
+    # #         title=title, 
+    # #         description=description
+    # #     )
+    # #     # None
+    # #     # print('##### if completed at key NOT in request_body new_task.completed_at : ', new_task.completed_at)
 
-    # elif "completed_at" in request_body:
+    # # elif "completed_at" in request_body:
         
-    #     completed_at = request_body["completed_at"]
+    # #     completed_at = request_body["completed_at"]
     
-    #     new_task = Task(
-    #             title=title, 
-    #             description=description,
-    #             completed_at=completed_at
-    #     )
+    # #     new_task = Task(
+    # #             title=title, 
+    # #             description=description,
+    # #             completed_at=completed_at
+    # #     )
 
-    #     # "completed_at": null
-    #     # None
-    #     # print('##### if completed at key in request_bodycompleted_at is: ', completed_at)
+    # #     # "completed_at": null
+    # #     # None
+    # #     # print('##### if completed at key in request_bodycompleted_at is: ', completed_at)
     
-    ######################################## END Option 2
+    # ######################################## END Option 2
 
     
-    db.session.add(new_task)
-    db.session.commit()
+    # db.session.add(new_task)
+    # db.session.commit()
 
-    ######################################## Option 3
-    # response = {
-    #     "task": {
-    #         "id": new_task.id,
-    #         "title": new_task.title,
-    #         "description": new_task.description,
-    #         # "completed_at": new_task.completed_at
-    #         # "is_complete": False if new_task.completed_at is None else True
-    #         "is_complete": new_task.is_complete
-    #     }
-    # }
+    # ######################################## Option 3
+    # # response = {
+    # #     "task": {
+    # #         "id": new_task.id,
+    # #         "title": new_task.title,
+    # #         "description": new_task.description,
+    # #         # "completed_at": new_task.completed_at
+    # #         # "is_complete": False if new_task.completed_at is None else True
+    # #         "is_complete": new_task.is_complete
+    # #     }
+    # # }
 
-    ######################################## Option 3 Refactoring
-    # use to_dict for creating the instance dictionary
-    # response = {"task": new_task.to_dict()}
-    ######################################## END Option 3 Refactoring
+    # ######################################## Option 3 Refactoring
+    # # use to_dict for creating the instance dictionary
+    # # response = {"task": new_task.to_dict()}
+    # ######################################## END Option 3 Refactoring
 
 
-    ####################### Optiona 3 Refactoring Version 2
-    class_name = (new_task.__class__.__name__).lower()
-    response = {class_name: new_task.to_dict()}
-    ####################### END Optiona 1 Refactoring
+    # ####################### Optiona 3 Refactoring Version 2
+    # class_name = (new_task.__class__.__name__).lower()
+    # response = {class_name: new_task.to_dict()}
+    # ####################### END Optiona 1 Refactoring
 
-    return response, 201
+    # return response, 201
 
+    #  ################################################################ END OPTION Post : use create_model
+    
+    ################################################################ Refactoring OPTION Post : use create_model
+    return create_model(Task, request_body)
+    ################################################################ END Refactoring OPTION Post : use create_model
 
 @tasks_bp.get("")
 def get_all_tasks():

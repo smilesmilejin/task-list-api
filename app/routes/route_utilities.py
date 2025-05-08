@@ -17,3 +17,19 @@ def validate_model(cls, model_id):
         abort(make_response(not_found_response, 404))
 
     return model
+
+def create_model(cls, model_data):
+    try:
+        new_model = cls.from_dict(model_data)
+    except KeyError:
+        response = {"details": "Invalid data"}
+        abort(make_response(response, 400))
+
+
+    db.session.add(new_model)
+    db.session.commit()
+
+    class_name = (new_model.__class__.__name__).lower()
+    response = {class_name: new_model.to_dict()}
+
+    return response, 201

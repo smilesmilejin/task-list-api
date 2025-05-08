@@ -2,7 +2,7 @@ from flask import Blueprint, request, abort, make_response, Response
 from ..db import db
 from app.models.goal import Goal
 from app.models.task import Task
-from app.routes.route_utilities import validate_model
+from app.routes.route_utilities import validate_model, create_model
 
 goals_bp = Blueprint("goals_bp", __name__, url_prefix = "/goals")
 
@@ -11,25 +11,32 @@ goals_bp = Blueprint("goals_bp", __name__, url_prefix = "/goals")
 @goals_bp.post("")
 def create_goal():
     request_body = request.get_json()
+    # ################################################################ OPTION Post : use create_model
 
-    try:
-        new_goal = Goal.from_dict(request_body)
-    except KeyError as e:
-        response = {"details": "Invalid data"}
-        abort(make_response(response, 400))
+    # try:
+    #     new_goal = Goal.from_dict(request_body)
+    # except KeyError as e:
+    #     response = {"details": "Invalid data"}
+    #     abort(make_response(response, 400))
 
-    db.session.add(new_goal)
-    db.session.commit()
+    # db.session.add(new_goal)
+    # db.session.commit()
 
-    ####################### Optional 1
-    # response = {"goal": new_goal.to_dict()}
+    # ####################### Optional 1
+    # # response = {"goal": new_goal.to_dict()}
 
-    ####################### Optiona 1 Refactoring
-    class_name = (new_goal.__class__.__name__).lower()
-    response = {class_name: new_goal.to_dict()}
-    ####################### END Optiona 1 Refactoring
+    # ####################### Optiona 1 Refactoring
+    # class_name = (new_goal.__class__.__name__).lower()
+    # response = {class_name: new_goal.to_dict()}
+    # ####################### END Optiona 1 Refactoring
 
-    return response, 201
+    # return response, 201
+
+    #  ################################################################ END OPTION Post : use create_model
+    
+    ################################################################ Refactoring OPTION Post : use create_model
+    return create_model(Goal, request_body)
+    ################################################################ END Refactoring OPTION Post : use create_model
 
 # GET request to /goals
 @goals_bp.get("")
