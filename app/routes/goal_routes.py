@@ -1,6 +1,7 @@
 from flask import Blueprint, request, abort, make_response, Response
 from ..db import db
 from app.models.goal import Goal
+from app.models.task import Task
 from app.routes.route_utilities import validate_model
 
 goals_bp = Blueprint("goals_bp", __name__, url_prefix = "/goals")
@@ -71,3 +72,44 @@ def delete_goal(goal_id):
     db.session.commit()
     
     return Response(status=204, mimetype="application/json")
+
+# Wave 6
+# POST request to /goals/1/tasks
+@goals_bp.post("/<goal_id>/tasks")
+def add_existing_tasksIDs_list_to_existing_goal(goal_id):
+    # Validate goal id
+    goal = validate_model(Goal, goal_id)
+
+    # Validate the list of tasks
+    request_body = request.get_json()
+
+    # request_body sample:
+    # {
+    # "task_ids": [1, 2, 3]
+    # }
+    
+    # if the goal already has tasks, delete all previous tasks
+    if goal.tasks:
+        goal.tasks = []
+
+    if "task_ids" in request_body:
+        for task_id in request_body["task_ids"]:
+            task = validate_model(Task, task_id)
+            goal.tasks.append(task)
+    
+    db.session.commit()
+    
+    response_id= {
+        "id": goal.id,
+    }
+
+    # merge two dict
+    response_body = response_id | request_body
+
+    #     {
+    #   "id": 1,
+    #   "task_ids": [1, 2, 3]
+    # }
+    
+    # 200 is not needed here, it is the default
+    return response_body, 200

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..db import db
 
 class Goal(db.Model):
@@ -6,6 +6,11 @@ class Goal(db.Model):
     # Wave 5
     title: Mapped[str]
 
+    # Wave 6
+    # One to many relationship
+    # One goal has many tasks
+    # One task has one goal
+    tasks: Mapped[list["Task"]] = relationship(back_populates="goal")
 
     def to_dict(self):
         goal_as_dict = {}

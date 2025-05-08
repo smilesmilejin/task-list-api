@@ -1,7 +1,9 @@
-from sqlalchemy.orm import Mapped, mapped_column, column_property
+from sqlalchemy.orm import Mapped, mapped_column, column_property, relationship
+from sqlalchemy import ForeignKey
 from ..db import db
 from sqlalchemy import DateTime
 from datetime import datetime
+from typing import Optional
 
 class Task(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -15,6 +17,16 @@ class Task(db.Model):
     # It will return True if completed_at is not null, otherwise False.
     #  It’s not meant to be updated directly — the value is always derived from other fields.
     is_complete = column_property(completed_at != None)
+
+    # Wave 6
+    # One to many relationship
+    # One goal has many tasks
+    # One task has one goal
+    # foreign key to goal's primary key column
+    # Optioanl syntax to maek the attribute nullable
+    goal_id: Mapped[Optional[int]]=mapped_column(ForeignKey("goal.id"))
+    goal: Mapped[Optional["Goal"]] = relationship(back_populates="tasks")
+
 
     # No column completed_at
     def to_dict(self):
