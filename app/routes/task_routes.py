@@ -1,5 +1,6 @@
 from flask import Blueprint, request, abort, make_response, Response
 from app.models.task import Task
+from app.models.goal import Goal
 from app.db import db
 from app.routes.route_utilities import validate_model
 from datetime import datetime
@@ -167,6 +168,10 @@ def get_one_task(task_id):
     response = {class_name: task.to_dict()}
     ######################################## END Optiona 2 Refactoring
 
+    # Wave 6 if there is goal_id add it
+    if task.goal_id:
+        response[class_name]["goal_id"] = task.goal_id
+    
     return response, 200
 
 ######################################## Option 1 
@@ -263,3 +268,4 @@ def mark_task_incomplete(task_id):
     task.completed_at = None
     db.session.commit()
     return Response(status=204, mimetype="application/json")
+
