@@ -16,9 +16,7 @@ def test_get_tasks_invalid_sort_not_asc_not_desc(client, three_tasks):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {
-        "details": "Invalid sort order. Only 'asc' or 'desc' are allowed."
-    }
+    assert response_body == {"details": "Invalid sort order. Only 'asc' or 'desc' or 'id' are allowed."}
 
 # @pytest.mark.skip(reason="No way to test this feature yet")
 def test_get_tasks_filtered_by_title(client, three_tasks):

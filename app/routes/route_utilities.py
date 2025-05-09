@@ -53,7 +53,7 @@ def filter_and_sort_models(cls, filters=None):
                     query = query.order_by(cls.id.asc())
                 # if the value if not asc or desc or id
                 else:
-                    invalid_sort_order = {"details": "Invalid sort order. Only 'asc' or 'desc' are allowed."}
+                    invalid_sort_order = {"details": "Invalid sort order. Only 'asc' or 'desc' or 'id' are allowed."}
                     abort(make_response(invalid_sort_order, 400))
 
             # if the class has the attribute
