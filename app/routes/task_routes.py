@@ -2,7 +2,7 @@ from flask import Blueprint, request, abort, make_response, Response
 from app.models.task import Task
 from app.models.goal import Goal
 from app.db import db
-from app.routes.route_utilities import validate_model, create_model, get_models_sorted_by_title, filter_and_sort_models, validate_datetime_type
+from app.routes.route_utilities import validate_model, create_model, filter_and_sort_models, validate_datetime_type
 from datetime import datetime
 import requests # Use Python package requests to make HTTP calls
 import os
@@ -28,12 +28,6 @@ def create_task():
 
 @tasks_bp.get("")
 def get_all_tasks():
-    print('######### request.args') # ImmutableMultiDict([('sort', 'asc')]
-    # http://127.0.0.1:5000/tasks?sort=asc&title=like
-    # ImmutableMultiDict([('sort', 'asc'), ('title', 'like')])
-    print(request.args)
-    # return get_models_sorted_by_title(Task, request.args)
-
     return filter_and_sort_models(Task, request.args)
 
 @tasks_bp.get("/<task_id>")
@@ -116,5 +110,6 @@ def mark_task_incomplete(task_id):
     
     task.completed_at = None
     db.session.commit()
+    
     return Response(status=204, mimetype="application/json")
 

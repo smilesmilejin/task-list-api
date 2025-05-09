@@ -113,7 +113,7 @@ def one_task_belongs_to_one_goal(app, one_goal, one_task):
 # ============================ #
 
 # This fixture gets called in every test that
-# references "three_tasks"
+# references "six_tasks"
 # This fixture creates six tasks and saves
 # them in the database
 @pytest.fixture

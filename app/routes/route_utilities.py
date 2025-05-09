@@ -34,40 +34,7 @@ def create_model(cls, model_data):
 
     return response, 201
 
-def get_models_sorted_by_title(cls, sort_order):
-    query = db.select(cls)
 
-    if sort_order:
-        for sort, order in sort_order.items():
-            if order == "asc":
-                query = query.order_by(cls.title.asc())
-            elif order == "desc":
-                query = query.order_by(cls.title.desc())
-    
-    models = db.session.scalars(query)
-    models_reponse = [model.to_dict() for model in models]
-
-    return models_reponse
-
-
-# def get_models_sorted_by_title(cls, sort_order):
-#     query = db.select(cls)
-
-#     if sort_order:
-#         for sort, order in sort_order.items():
-#             if order == "asc":
-#                 query = query.order_by(cls.title.asc())
-#             elif order == "desc":
-#                 query = query.order_by(cls.title.desc())
-    
-#     models = db.session.scalars(query)
-#     models_reponse = [model.to_dict() for model in models]
-
-#     return models_reponse
-
-# ============================ #
-#       OPTION ENHANCEMENT
-# ============================ #
 def filter_and_sort_models(cls, filters=None):
     query = db.select(cls)
 
@@ -78,9 +45,13 @@ def filter_and_sort_models(cls, filters=None):
                     query = query.order_by(cls.title.asc())
                 elif value == "desc":
                     query = query.order_by(cls.title.desc())
+                
+                # ============================ #
+                #       OPTION ENHANCEMENT
+                # ============================ #
                 elif value == "id":
                     query = query.order_by(cls.id.asc())
-                # if the value if not asc or desc
+                # if the value if not asc or desc or id
                 else:
                     invalid_sort_order = {"details": "Invalid sort order. Only 'asc' or 'desc' are allowed."}
                     abort(make_response(invalid_sort_order, 400))
@@ -98,16 +69,7 @@ def filter_and_sort_models(cls, filters=None):
 # ============================ #
 #       OPTION ENHANCEMENT
 # ============================ #
-
 def validate_datetime_type(date_string):
-    # pass
-
-    # # Task.__annotations__["completed_at"]    
-    # # cls.__annotations__[column]  
-
-    # # column_type = class_mapper(Task).columns["completed_at"].type
-    # # column_type = class_mapper(cls).columns[column].type 
-
     try: 
         datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
     except ValueError:

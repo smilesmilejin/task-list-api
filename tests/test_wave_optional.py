@@ -7,7 +7,6 @@ from datetime import datetime
 #       OPTION ENHANCEMENT
 # ============================ #
 
-
 # @pytest.mark.skip(reason="No way to test this feature yet")
 def test_get_tasks_invalid_sort_not_asc_not_desc(client, three_tasks):
     # Act
@@ -40,6 +39,7 @@ def test_get_tasks_filtered_by_title(client, three_tasks):
             "is_complete": False
         }
     ]
+
 # @pytest.mark.skip(reason="No way to test this feature yet")
 def test_get_tasks_sorted_and_filtered_by_title_and_sorted_asc(client, six_tasks):
     # Act
@@ -126,8 +126,6 @@ def test_create_task_successfully_with_valid_completed_at(client):
     assert new_task.description == "Test Description"
     assert new_task.completed_at == expected_completed_at
 
-    # This one wont work
-    # assert new_task.completed_at == "2025-05-09 14:30:45.123456"
 
 # @pytest.mark.skip(reason="No way to test this feature yet")
 def test_update_task_with_invalid_datetime_in_completed_at(client, one_task):
