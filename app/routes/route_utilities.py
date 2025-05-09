@@ -25,11 +25,9 @@ def create_model(cls, model_data):
         response = {"details": "Invalid data"}
         abort(make_response(response, 400))
 
-
     db.session.add(new_model)
     db.session.commit()
 
-    # class_name = (new_model.__class__.__name__).lower()
     class_name = str(new_model).lower()
     response = {class_name: new_model.to_dict()}
 
@@ -41,10 +39,8 @@ def get_models_sorted_by_title(cls, sort_order):
     if sort_order:
         for sort, order in sort_order.items():
             if order == "asc":
-                # print('############### asc')
                 query = query.order_by(cls.title.asc())
             elif order == "desc":
-                # print('############### desc')
                 query = query.order_by(cls.title.desc())
     
     models = db.session.scalars(query)

@@ -7,38 +7,13 @@ from app.routes.route_utilities import validate_model, create_model
 goals_bp = Blueprint("goals_bp", __name__, url_prefix = "/goals")
 
 
-# Wave 5
 @goals_bp.post("")
 def create_goal():
     request_body = request.get_json()
-    # ################################################################ OPTION Post : use create_model
 
-    # try:
-    #     new_goal = Goal.from_dict(request_body)
-    # except KeyError as e:
-    #     response = {"details": "Invalid data"}
-    #     abort(make_response(response, 400))
-
-    # db.session.add(new_goal)
-    # db.session.commit()
-
-    # ####################### Optional 1
-    # # response = {"goal": new_goal.to_dict()}
-
-    # ####################### Optiona 1 Refactoring
-    # class_name = (new_goal.__class__.__name__).lower()
-    # response = {class_name: new_goal.to_dict()}
-    # ####################### END Optiona 1 Refactoring
-
-    # return response, 201
-
-    #  ################################################################ END OPTION Post : use create_model
-    
-    ################################################################ Refactoring OPTION Post : use create_model
     return create_model(Goal, request_body)
-    ################################################################ END Refactoring OPTION Post : use create_model
 
-# GET request to /goals
+
 @goals_bp.get("")
 def get_all_goals():
 
@@ -54,17 +29,12 @@ def get_all_goals():
 def get_one_goal(goal_id):
     goal = validate_model(Goal, goal_id)
 
-    ####################### Optiona 1
-    # class_name = (goal.__class__.__name__).lower()
-    ####################### Refactoring Optiona 1: use str method in the class
     class_name = str(goal).lower()
-
-    ####################### END Refactoring Optiona 1: use str method in the class
     response = {class_name: goal.to_dict()}
 
     return response, 200
 
-# PUT request to /goals/1
+
 @goals_bp.put("/<goal_id>")
 def update_goal(goal_id):
     goal = validate_model(Goal, goal_id)
@@ -75,7 +45,6 @@ def update_goal(goal_id):
     return Response(status=204, mimetype="application/json")
 
 
-# DELETE request to /goals/1
 @goals_bp.delete("/<goal_id>")
 def delete_goal(goal_id):
     goal = validate_model(Goal, goal_id)
@@ -85,21 +54,13 @@ def delete_goal(goal_id):
     
     return Response(status=204, mimetype="application/json")
 
-# Wave 6
-# POST request to /goals/1/tasks
+
 @goals_bp.post("/<goal_id>/tasks")
 def add_existing_tasksIDs_list_to_existing_goal(goal_id):
-    # Validate goal id
     goal = validate_model(Goal, goal_id)
 
-    # Validate the list of tasks
     request_body = request.get_json()
 
-    # request_body sample:
-    # {
-    # "task_ids": [1, 2, 3]
-    # }
-    
     # if the goal already has tasks, delete all previous tasks
     if goal.tasks:
         goal.tasks = []
@@ -111,22 +72,12 @@ def add_existing_tasksIDs_list_to_existing_goal(goal_id):
     
     db.session.commit()
     
-    response_id= {
-        "id": goal.id,
-    }
-
-    # merge two dict
+    response_id= {"id": goal.id}
     response_body = response_id | request_body
 
-    #     {
-    #   "id": 1,
-    #   "task_ids": [1, 2, 3]
-    # }
-    
-    # 200 is not needed here, it is the default
     return response_body, 200
 
-# GET request to /goals/333/tasks
+
 @goals_bp.get("/<goal_id>/tasks")
 def get_goal_with_tasks_list(goal_id):
     goal = validate_model(Goal, goal_id)
