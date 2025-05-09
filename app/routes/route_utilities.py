@@ -1,6 +1,7 @@
 
 from flask import abort, make_response
 from ..db import db
+from datetime import datetime
 
 def validate_model(cls, model_id):
     try:
@@ -47,3 +48,72 @@ def get_models_sorted_by_title(cls, sort_order):
     models_reponse = [model.to_dict() for model in models]
 
     return models_reponse
+
+
+# def get_models_sorted_by_title(cls, sort_order):
+#     query = db.select(cls)
+
+#     if sort_order:
+#         for sort, order in sort_order.items():
+#             if order == "asc":
+#                 query = query.order_by(cls.title.asc())
+#             elif order == "desc":
+#                 query = query.order_by(cls.title.desc())
+    
+#     models = db.session.scalars(query)
+#     models_reponse = [model.to_dict() for model in models]
+
+#     return models_reponse
+
+# ============================ #
+#       OPTION ENHANCEMENT
+# ============================ #
+def filter_and_sort_models(cls, filters=None):
+    query = db.select(cls)
+
+    if filters:
+        for attribute, value in filters.items():
+            if attribute == "sort":
+                if value == "asc":
+                    query = query.order_by(cls.title.asc())
+                elif value == "desc":
+                    query = query.order_by(cls.title.desc())
+                elif value == "id":
+                    query = query.order_by(cls.id.asc())
+                # if the value if not asc or desc
+                else:
+                    invalid_sort_order = {"details": "Invalid sort order. Only 'asc' or 'desc' are allowed."}
+                    abort(make_response(invalid_sort_order, 400))
+
+            # if the class has the attribute
+            if hasattr(cls, attribute):
+                # getattr(cls, attribute) return the column we are looking for
+                query = query.where(getattr(cls, attribute).ilike(f"%{value}%"))
+
+    models = db.session.scalars(query)
+    models_reponse = [model.to_dict() for model in models]
+
+    return models_reponse
+
+# ============================ #
+#       OPTION ENHANCEMENT
+# ============================ #
+
+def validate_datetime_type(date_string):
+    # pass
+
+    # # Task.__annotations__["completed_at"]    
+    # # cls.__annotations__[column]  
+
+    # # column_type = class_mapper(Task).columns["completed_at"].type
+    # # column_type = class_mapper(cls).columns[column].type 
+
+    try: 
+        datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
+    except ValueError:
+        invalid_date_time_response = {
+            "details": "Invalid datetime format. Expected 'YYYY-MM-DD HH:MM:SS.ssssss'."
+        }
+        abort(make_response(invalid_date_time_response, 400))
+
+    return True

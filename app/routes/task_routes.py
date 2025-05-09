@@ -2,7 +2,7 @@ from flask import Blueprint, request, abort, make_response, Response
 from app.models.task import Task
 from app.models.goal import Goal
 from app.db import db
-from app.routes.route_utilities import validate_model, create_model, get_models_sorted_by_title
+from app.routes.route_utilities import validate_model, create_model, get_models_sorted_by_title, filter_and_sort_models, validate_datetime_type
 from datetime import datetime
 import requests # Use Python package requests to make HTTP calls
 import os
@@ -14,13 +14,27 @@ tasks_bp = Blueprint("tasks_bp", __name__, url_prefix = "/tasks")
 def create_task():
     request_body = request.get_json()
 
+    # ============================ #
+    #       OPTION ENHANCEMENT
+    # ============================ #
+    if "completed_at" in request_body:
+        validate_datetime_type(request_body["completed_at"])
+    # ============================ #
+    #       OPTION ENHANCEMENT
+    # ============================ #
+
     return create_model(Task, request_body)
 
 
 @tasks_bp.get("")
 def get_all_tasks():
-    return get_models_sorted_by_title(Task, request.args)
+    print('######### request.args') # ImmutableMultiDict([('sort', 'asc')]
+    # http://127.0.0.1:5000/tasks?sort=asc&title=like
+    # ImmutableMultiDict([('sort', 'asc'), ('title', 'like')])
+    print(request.args)
+    # return get_models_sorted_by_title(Task, request.args)
 
+    return filter_and_sort_models(Task, request.args)
 
 @tasks_bp.get("/<task_id>")
 def get_one_task(task_id):
@@ -41,6 +55,16 @@ def update_task(task_id):
     task = validate_model(Task, task_id)
 
     request_body = request.get_json()
+    
+    # ============================ #
+    #       OPTION ENHANCEMENT
+    # ============================ #
+    if "completed_at" in request_body:
+        validate_datetime_type(request_body["completed_at"])
+        task.completed_at = request_body["completed_at"] 
+    # ============================ #
+    #       OPTION ENHANCEMENT
+    # ============================ #
 
     task.title = request_body["title"] 
     task.description = request_body["description"]

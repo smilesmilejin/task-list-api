@@ -105,3 +105,37 @@ def one_task_belongs_to_one_goal(app, one_goal, one_task):
     goal = db.session.scalar(goal_query)
     goal.tasks.append(task)
     db.session.commit()
+
+
+
+# ============================ #
+#       OPTION ENHANCEMENT
+# ============================ #
+
+# This fixture gets called in every test that
+# references "three_tasks"
+# This fixture creates six tasks and saves
+# them in the database
+@pytest.fixture
+def six_tasks(app):
+    db.session.add_all([
+        Task(title="Water the garden 🌷", 
+            description="", 
+            completed_at=None),
+        Task(title="Answer forgotten email 📧", 
+            description="", 
+            completed_at=None),
+        Task(title="Pay my outstanding tickets 😭", 
+            description="", 
+            completed_at=None),
+        Task(title="Tuesday happy hour", 
+            description="", 
+            completed_at=None),
+        Task(title="Bob's oustanding day!", 
+            description="", 
+            completed_at=None),
+        Task(title="My beautiful day", 
+            description="", 
+            completed_at=None)
+    ])
+    db.session.commit()
