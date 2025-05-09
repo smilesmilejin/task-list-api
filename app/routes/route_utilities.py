@@ -1,6 +1,9 @@
 
 from flask import abort, make_response
 from ..db import db
+from sqlalchemy.orm import class_mapper # class_mapper will get the column data type
+from datetime import datetime
+
 
 def validate_model(cls, model_id):
     try:
@@ -51,4 +54,3 @@ def get_models_sorted_by_title(cls, sort_order):
     models_reponse = [model.to_dict() for model in models]
 
     return models_reponse
-
