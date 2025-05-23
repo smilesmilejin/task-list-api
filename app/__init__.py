@@ -21,7 +21,6 @@ def create_app(config=None):
 
     # Register Blueprints here
     app.register_blueprint(tasks_bp)
-
     app.register_blueprint(goals_bp)
 
     return app

@@ -1,4 +1,4 @@
-"""empty message
+"""add Goal model
 
 Revision ID: cf6743f81d16
 Revises: 

@@ -2,6 +2,8 @@
 from flask import abort, make_response
 from ..db import db
 from datetime import datetime
+import requests
+import os
 
 def validate_model(cls, model_id):
     try:
@@ -19,7 +21,7 @@ def validate_model(cls, model_id):
 
     return model
 
-def create_model(cls, model_data):
+def create_model_and_response(cls, model_data):
     try:
         new_model = cls.from_dict(model_data)
     except KeyError:
@@ -79,3 +81,22 @@ def validate_datetime_type(date_string):
         abort(make_response(invalid_date_time_response, 400))
 
     return True
+
+def post_task_complete_msg_to_slack(task_title):
+    # Wave 4 Slack
+    slack_url = os.environ.get('SLACK_URI')
+    slack_token = os.environ.get('SLACK_TOEKN')
+
+    headers = {
+        "Authorization": f"Bearer {slack_token}",
+        "Content-Type": "application/json"
+    }   
+
+    data = {
+
+        "channel": "C08NTC26TM1",
+        "text": f"Someone just completed the task {task_title}"
+    }
+
+    # Make the POST request to Slack API
+    response = requests.post(slack_url, headers=headers, json=data)

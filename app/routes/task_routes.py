@@ -1,8 +1,7 @@
-from flask import Blueprint, request, abort, make_response, Response
+from flask import Blueprint, request, Response
 from app.models.task import Task
-from app.models.goal import Goal
 from app.db import db
-from app.routes.route_utilities import validate_model, create_model, filter_and_sort_models, validate_datetime_type
+from app.routes.route_utilities import validate_model, create_model_and_response, filter_and_sort_models, validate_datetime_type, post_task_complete_msg_to_slack
 from datetime import datetime
 import requests # Use Python package requests to make HTTP calls
 import os
@@ -23,7 +22,7 @@ def create_task():
     #       OPTION ENHANCEMENT
     # ============================ #
 
-    return create_model(Task, request_body)
+    return create_model_and_response(Task, request_body)
 
 
 @tasks_bp.get("")
@@ -34,14 +33,16 @@ def get_all_tasks():
 def get_one_task(task_id):
     task = validate_model(Task, task_id)
 
-    class_name = str(task).lower()
-    response = {class_name: task.to_dict()}
+    # class_name = str(task).lower()
+    # response = {class_name: task.to_dict()}
 
-    # Wave 6 if task has goal, add the goal to the response
-    if task.goal_id:
-        response[class_name]["goal_id"] = task.goal_id
+    # # Wave 6 if task has goal, add the goal to the response
+    # if task.goal_id:
+    #     response[class_name]["goal_id"] = task.goal_id
+
+    response = task.to_nested_dict()
     
-    return response, 200
+    return response
 
 
 @tasks_bp.put("/<task_id>")
@@ -50,18 +51,20 @@ def update_task(task_id):
 
     request_body = request.get_json()
     
-    # ============================ #
-    #       OPTION ENHANCEMENT
-    # ============================ #
-    if "completed_at" in request_body:
-        validate_datetime_type(request_body["completed_at"])
-        task.completed_at = request_body["completed_at"] 
-    # ============================ #
-    #       OPTION ENHANCEMENT
-    # ============================ #
+    # # ============================ #
+    # #       OPTION ENHANCEMENT
+    # # ============================ #
+    # if "completed_at" in request_body:
+    #     validate_datetime_type(request_body["completed_at"])
+    #     task.completed_at = request_body["completed_at"] 
+    # # ============================ #
+    # #       OPTION ENHANCEMENT
+    # # ============================ #
 
-    task.title = request_body["title"] 
-    task.description = request_body["description"]
+    # task.title = request_body["title"] 
+    # task.description = request_body["description"]
+
+    task.update(request_body)
 
     db.session.commit()
     return Response(status=204, mimetype="application/json")
@@ -84,23 +87,25 @@ def mark_task_complete(task_id):
     
     db.session.commit()
 
-    # Wave 4 Slack
-    slack_url = os.environ.get('SLACK_URI')
-    slack_token = os.environ.get('SLACK_TOEKN')
+    # # Wave 4 Slack
+    # slack_url = os.environ.get('SLACK_URI')
+    # slack_token = os.environ.get('SLACK_TOEKN')
 
-    headers = {
-        "Authorization": f"Bearer {slack_token}",
-        "Content-Type": "application/json"
-    }   
+    # headers = {
+    #     "Authorization": f"Bearer {slack_token}",
+    #     "Content-Type": "application/json"
+    # }   
 
-    data = {
+    # data = {
 
-        "channel": "C08NTC26TM1",
-        "text": f"Someone just completed the task {task.title}"
-    }
+    #     "channel": "C08NTC26TM1",
+    #     "text": f"Someone just completed the task {task.title}"
+    # }
 
-    # Make the POST request to Slack API
-    response = requests.post(slack_url, headers=headers, json=data)
+    # # Make the POST request to Slack API
+    # response = requests.post(slack_url, headers=headers, json=data)
+
+    post_task_complete_msg_to_slack(task.title)
 
     return Response(status=204, mimetype="application/json")
 
