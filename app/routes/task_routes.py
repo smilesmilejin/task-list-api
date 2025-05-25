@@ -79,36 +79,47 @@ def delete_task(task_id):
     return Response(status=204, mimetype="application/json")
 
 
+# @tasks_bp.patch("/<task_id>/mark_complete")
+# def mark_task_complete(task_id):
+#     task = validate_model(Task, task_id)
+
+#     task.completed_at = datetime.now()
+    
+#     db.session.commit()
+
+#     # # Wave 4 Slack
+#     # slack_url = os.environ.get('SLACK_URI')
+#     # slack_token = os.environ.get('SLACK_TOEKN')
+
+#     # headers = {
+#     #     "Authorization": f"Bearer {slack_token}",
+#     #     "Content-Type": "application/json"
+#     # }   
+
+#     # data = {
+
+#     #     "channel": "C08NTC26TM1",
+#     #     "text": f"Someone just completed the task {task.title}"
+#     # }
+
+#     # # Make the POST request to Slack API
+#     # response = requests.post(slack_url, headers=headers, json=data)
+
+#     post_task_complete_msg_to_slack(task.title)
+
+#     return Response(status=204, mimetype="application/json")
+
 @tasks_bp.patch("/<task_id>/mark_complete")
 def mark_task_complete(task_id):
-    task = validate_model(Task, task_id)
-
-    task.completed_at = datetime.now()
+    try:
+        task = validate_model(Task, task_id)
+        task.completed_at = datetime.now()
+        db.session.commit()
+        post_task_complete_msg_to_slack(task.title)
+        return {"task": task.to_dict()}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
     
-    db.session.commit()
-
-    # # Wave 4 Slack
-    # slack_url = os.environ.get('SLACK_URI')
-    # slack_token = os.environ.get('SLACK_TOEKN')
-
-    # headers = {
-    #     "Authorization": f"Bearer {slack_token}",
-    #     "Content-Type": "application/json"
-    # }   
-
-    # data = {
-
-    #     "channel": "C08NTC26TM1",
-    #     "text": f"Someone just completed the task {task.title}"
-    # }
-
-    # # Make the POST request to Slack API
-    # response = requests.post(slack_url, headers=headers, json=data)
-
-    post_task_complete_msg_to_slack(task.title)
-
-    return Response(status=204, mimetype="application/json")
-
 @tasks_bp.patch("/<task_id>/mark_incomplete")
 def mark_task_incomplete(task_id):
     task = validate_model(Task, task_id)
